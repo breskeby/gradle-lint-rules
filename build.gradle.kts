@@ -1,6 +1,7 @@
 
-
 import codegen.GenerateClasspathManifest
+import com.gradle.publish.PluginBundleExtension
+import com.jfrog.bintray.gradle.BintrayExtension
 import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
@@ -13,29 +14,34 @@ buildscript {
     extra["kotlinRepo"] = kotlinRepo
 
     repositories {
-        maven { setUrl("http://dl.bintray.com/kotlin/kotlin-eap-1.1")}
+        maven { setUrl("http://dl.bintray.com/kotlin/kotlin-eap-1.1") }
         maven { setUrl(kotlinRepo) }
+        maven { setUrl("https://plugins.gradle.org/m2/") }
+        jcenter()
     }
 
     dependencies {
+        classpath("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
         classpath("org.jfrog.buildinfo:build-info-extractor-gradle:4.1.1")
+        classpath("com.gradle.publish:plugin-publish-plugin:0.9.6")
     }
 }
 
 apply {
     plugin("kotlin")
-    plugin("java-gradle-plugin")
     plugin("maven-publish")
-    plugin("com.jfrog.artifactory")
+    plugin("java-gradle-plugin")
+    plugin("com.gradle.plugin-publish")
+    plugin("com.jfrog.bintray")
 }
 
 group = "com.breskeby.gradle"
-version = "0.1-SNAPSHOT"
+version = "0.0.1"
 
 repositories {
     jcenter()
-    maven { setUrl("http://dl.bintray.com/kotlin/kotlin-eap-1.1")}
+    maven { setUrl("http://dl.bintray.com/kotlin/kotlin-eap-1.1") }
     maven {
         setUrl("https://plugins.gradle.org/m2/")
     }
@@ -43,7 +49,6 @@ repositories {
 }
 dependencies {
     compileOnly(gradleApi())
-
     compile("com.netflix.nebula:gradle-lint-plugin:5.1.3")
     compile(kotlin("stdlib"))
 
@@ -70,6 +75,51 @@ configure<PublishingExtension> {
     }
 }
 
+configure<BintrayExtension> {
+    user = System.getProperty("bintrayUser")
+    key =  System.getProperty("bintrayKey")
+    setPublications("mavenJava")
+
+    pkg.repo = "gradle-plugins"
+    pkg.name = "com.breskeby.gradle:gradle-lint-addons"
+    pkg.desc = "A set of lint rules for the gradle-lint-plugin."
+    pkg.websiteUrl = "https://github.com/breskeby/${project.name}"
+    pkg.vcsUrl = "https://github.com/breskeby/${project.name}"
+    pkg.setLicenses("Apache-2.0")
+    pkg.publicDownloadNumbers = true
+    pkg.setLabels("gradle", "lint")
+    pkg.version.vcsTag = "v${project.version}"
+    pkg.version.attributes = mapOf("gradle-plugin" to listOf("com.breskeby.gradle:gradle-lint-addons"))
+    pkg.version.gpg.sign = true
+    pkg.version.gpg.passphrase = System.getProperty("gpgPassphrase")
+}
+
+
+// The configuration example below shows the minimum required properties
+// configured to publish your plugin to the plugin portal
+//
+configure<PluginBundleExtension>{
+    website = "https://github.com/breskeby/gradle-lint-rules"
+    vcsUrl = "https://github.com/breskeby/gradle-lint-rules"
+    tags = listOf("lint", "formatting")
+    val pluginDescr = plugins.create("lint-rules")
+    pluginDescr.id = "com.breskeby.lint.rules"
+    pluginDescr.displayName = "Custom Lint rules on for nebula.lint plugin"
+}
+
+//pluginBundle {
+//    website = 'http://www.gradle.org/'
+//    vcsUrl = 'https://github.com/breskeby/gradle-lint-rules'
+//    description = 'Greetings from here!'
+//    tags = ['greetings', 'salutations']
+//
+//    plugins {
+//        greetingsPlugin {
+//            id = 'com.breskeby.lint.rules'
+//            displayName = 'Gradle Greeting plugin'
+//        }
+//    }
+//}
 //// --- Utility functions -----------------------------------------------
 fun kotlin(module: String) = "org.jetbrains.kotlin:kotlin-$module:${extra["kotlinVersion"]}"
 
