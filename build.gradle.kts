@@ -45,15 +45,11 @@ dependencies {
     compileOnly(gradleApi())
 
     compile("com.netflix.nebula:gradle-lint-plugin:5.1.3")
-    compile("org.ow2.asm:asm-all:5.1")
-
     compile(kotlin("stdlib"))
-    compile(kotlin("reflect"))
 
     testCompile(gradleTestKit())
     testCompile("junit:junit:4.12")
     testCompile("com.nhaarman:mockito-kotlin:0.6.0")
-    testCompile("com.fasterxml.jackson.module:jackson-module-kotlin:2.7.5")
 }
 
 val sourceSets = the<JavaPluginConvention>().sourceSets
