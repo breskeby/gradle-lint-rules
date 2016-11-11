@@ -104,22 +104,10 @@ configure<PluginBundleExtension>{
     tags = listOf("lint", "formatting")
     val pluginDescr = plugins.create("lint-rules")
     pluginDescr.id = "com.breskeby.lint.rules"
-    pluginDescr.displayName = "Custom Lint rules on for nebula.lint plugin"
+    pluginDescr.description = "Additional Lint rules on top of the nebula.lint plugin"
+    pluginDescr.displayName = "Gradle Lint rules"
 }
 
-//pluginBundle {
-//    website = 'http://www.gradle.org/'
-//    vcsUrl = 'https://github.com/breskeby/gradle-lint-rules'
-//    description = 'Greetings from here!'
-//    tags = ['greetings', 'salutations']
-//
-//    plugins {
-//        greetingsPlugin {
-//            id = 'com.breskeby.lint.rules'
-//            displayName = 'Gradle Greeting plugin'
-//        }
-//    }
-//}
 //// --- Utility functions -----------------------------------------------
 fun kotlin(module: String) = "org.jetbrains.kotlin:kotlin-$module:${extra["kotlinVersion"]}"
 
