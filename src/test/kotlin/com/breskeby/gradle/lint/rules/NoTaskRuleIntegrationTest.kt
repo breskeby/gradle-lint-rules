@@ -4,8 +4,7 @@ import com.breskeby.gradle.lint.addon.fixtures.AbstractRuleIntegrationTest
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Test
 
-
-class NoIfRuleIntegrationTest : AbstractRuleIntegrationTest() {
+class NoTaskRuleIntegrationTest : AbstractRuleIntegrationTest() {
 
     @Test
     fun `if statements triggers lint warning`() {
@@ -14,20 +13,17 @@ class NoIfRuleIntegrationTest : AbstractRuleIntegrationTest() {
                 id 'nebula.lint'
             }
             apply plugin:"java"
-            gradleLint.rules = ['no-if-rule']
+            gradleLint.rules = ['no-task-rule']
 
             task someTask {
-                if(2==2){
-                }
             }
         """)
 
         val result = build("lintGradle")
-        assert(result.output.contains("warning   no-if-rule"))
-        assert(result.output.contains("If statements are not allowed in build scripts. Put imperative logic into a plugin! (no auto-fix available)"))
+        assert(result.output.contains("warning   no-task-rule"))
+        assert(result.output.contains("No Task Definition in bulid script allowed. Use plugins for maintaining custom logic."))
         assert(result.task(":lintGradle").outcome == TaskOutcome.SUCCESS)
     }
 
 }
-
 
